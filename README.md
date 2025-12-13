@@ -2,7 +2,7 @@
 
 MiaBot es un dashboard inteligente diseñado para automatizar procesos internos operativos y administrativos de PYMES, con asistencia conversacional integrada que facilita la gestión diaria.
 
-## 🎯 Características Principales
+## Características Principales
 
 ### Sistema de Roles
 - **ADMIN** - Acceso total a todos los módulos
@@ -11,19 +11,19 @@ MiaBot es un dashboard inteligente diseñado para automatizar procesos internos 
 
 ### Módulos por Departamento
 
-#### 💰 Finanzas (FINANCE)
+#### Finanzas (FINANCE)
 - Gestión de inventario con alertas de stock bajo
 - Facturación digital con seguimiento de pagos
 - Gestión de clientes y proveedores
 - Recordatorios de cobro automatizados
 
-#### 👥 Recursos Humanos (HR)
+#### Recursos Humanos (HR)
 - Gestión de empleados y contratos
 - Eventos y reuniones (cumpleaños, capacitaciones, etc.)
 - Solicitudes de permisos y vacaciones
 - Alertas de vencimiento de contratos
 
-### 💬 Sistema de Chat Dual
+### Sistema de Chat Dual
 - **Chat Interno**: Para empleados autenticados
   - Consultas de inventario, facturas, tareas
   - Creación de tareas y eventos por chat
@@ -35,12 +35,12 @@ MiaBot es un dashboard inteligente diseñado para automatizar procesos internos 
   - Preguntas frecuentes
   - Registro de quejas/solicitudes
 
-### 📊 Dashboard Inteligente
+### Dashboard Inteligente
 - Métricas en tiempo real por departamento
 - Alertas automáticas (stock bajo, facturas vencidas, etc.)
 - Atajos rápidos personalizados
 
-### 📁 Integración con Google Drive
+### Integración con Google Drive
 - Lectura de archivos
 - Subida de documentos
 - Búsqueda de archivos
@@ -54,7 +54,7 @@ MiaBot es un dashboard inteligente diseñado para automatizar procesos internos 
 - **Archivos**: Google Drive API + Local
 - **Contenedores**: Docker + Docker Compose
 
-## 📦 Instalación
+## Instalación
 
 ### 1. Clonar e instalar dependencias
 
@@ -119,7 +119,7 @@ npm start
 
 El servidor estará disponible en `http://localhost:3000`
 
-## 🐳 Docker
+## Docker
 
 ### Ejecutar con Docker Compose (recomendado)
 
@@ -160,14 +160,14 @@ docker-compose ps
 docker-compose exec miabot sh
 ```
 
-## 📚 Documentación API
+## Documentación API
 
 La documentación Swagger está disponible en:
 ```
 http://localhost:3000/docs
 ```
 
-## 🔐 Credenciales de Prueba
+## Credenciales de Prueba
 
 Después de ejecutar el seed:
 
@@ -177,7 +177,7 @@ Después de ejecutar el seed:
 | Finanzas | finanzas@miabot.com | admin123 | EMPLOYEE (FINANCE) |
 | RRHH | rrhh@miabot.com | admin123 | EMPLOYEE (HR) |
 
-## 📡 Endpoints Principales
+## Endpoints Principales
 
 ### Autenticación
 ```
@@ -250,7 +250,7 @@ POST /api/files/drive/upload     # Subir a Google Drive
 GET  /api/files/drive/:id/content # Leer contenido de archivo
 ```
 
-## 🔄 Automatizaciones (n8n)
+## Automatizaciones (n8n)
 
 El sistema está preparado para integrarse con n8n para:
 
@@ -327,7 +327,7 @@ Miabot/
 - [x] Docker y Docker Compose
 - [x] Documentación Swagger
 
-## 🚀 Próximos Pasos
+## Próximos Pasos
 
 1. [ ] Frontend con React + TailwindCSS
 2. [ ] Integración con Google Calendar
@@ -336,7 +336,7 @@ Miabot/
 5. [ ] Reportes PDF
 6. [ ] Multi-empresa (SaaS)
 
-## 📄 Licencia
+## Licencia
 
 MIT
 
