@@ -1,0 +1,510 @@
+// MiaBot - Modelo de Datos Normalizado para MVP
+// Asistente Virtual Inteligente para PYMES
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================
+// DATOS MAESTROS (Master Data)
+// ============================================
+
+// Empresa/Organización - Datos maestros principales
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  nit         String?  @unique // NIT en Colombia
+  email       String?
+  phone       String?
+  address     String?
+  logo        String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relaciones
+  users       User[]
+  products    Product[]
+  clients     Client[]
+  suppliers   Supplier[]
+  invoices    Invoice[]
+  events      Event[]
+  chatSessions ChatSession[]
+  
+  @@map("companies")
+}
+
+// ============================================
+// USUARIOS Y AUTENTICACIÓN
+// ============================================
+
+enum Role {
+  ADMIN      // Acceso total
+  EMPLOYEE   // Por departamento
+  EXTERNAL   // Solo chat externo
+}
+
+enum Department {
+  FINANCE    // Finanzas - Inventario, facturas, pagos
+  HR         // Recursos Humanos - Empleados, eventos, permisos
+}
+
+model User {
+  id            String      @id @default(cuid())
+  email         String      @unique
+  password      String      // Hasheado con bcrypt
+  name          String
+  role          Role        @default(EMPLOYEE)
+  department    Department? // Solo para EMPLOYEE
+  phone         String?
+  avatar        String?
+  isActive      Boolean     @default(true)
+  
+  // Datos de empleado (si aplica)
+  position      String?     // Cargo
+  hireDate      DateTime?   // Fecha de contratación
+  birthDate     DateTime?   // Para cumpleaños
+  contractEnd   DateTime?   // Vencimiento de contrato
+  
+  companyId     String
+  company       Company     @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  
+  // Relaciones
+  tasksCreated  Task[]      @relation("TaskCreator")
+  tasksAssigned Task[]      @relation("TaskAssignee")
+  leaveRequests LeaveRequest[]
+  chatMessages  ChatMessage[]
+  notifications Notification[]
+  
+  @@map("users")
+}
+
+// ============================================
+// MÓDULO FINANZAS - Inventario
+// ============================================
+
+// Categorías de productos (Dato maestro)
+model Category {
+  id        String    @id @default(cuid())
+  name      String
+  products  Product[]
+  
+  @@map("categories")
+}
+
+// Productos/Inventario
+model Product {
+  id            String   @id @default(cuid())
+  sku           String?  // Código único del producto
+  name          String
+  description   String?
+  
+  // Inventario
+  stock         Int      @default(0)
+  minStock      Int      @default(5)  // Alerta cuando stock < minStock
+  unit          String   @default("unidad") // unidad, kg, litro, etc.
+  
+  // Precios
+  costPrice     Decimal  @db.Decimal(12, 2) // Precio de costo
+  salePrice     Decimal  @db.Decimal(12, 2) // Precio de venta
+  
+  isActive      Boolean  @default(true)
+  
+  categoryId    String?
+  category      Category? @relation(fields: [categoryId], references: [id])
+  
+  companyId     String
+  company       Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  
+  // Relaciones
+  invoiceItems  InvoiceItem[]
+  
+  @@unique([companyId, sku])
+  @@map("products")
+}
+
+// ============================================
+// MÓDULO FINANZAS - Clientes y Proveedores
+// ============================================
+
+// Clientes
+model Client {
+  id          String    @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  nit         String?   // NIT o cédula
+  
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relaciones
+  invoices    Invoice[]
+  
+  @@map("clients")
+}
+
+// Proveedores
+model Supplier {
+  id          String    @id @default(cuid())
+  name        String
+  email       String?
+  phone       String?
+  address     String?
+  nit         String?
+  contactName String?   // Nombre del contacto
+  
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  @@map("suppliers")
+}
+
+// ============================================
+// MÓDULO FINANZAS - Facturación
+// ============================================
+
+enum InvoiceStatus {
+  DRAFT      // Borrador
+  SENT       // Enviada
+  PAID       // Pagada
+  OVERDUE    // Vencida
+  CANCELLED  // Cancelada
+}
+
+// Facturas
+model Invoice {
+  id            String        @id @default(cuid())
+  number        String        // Número de factura
+  
+  status        InvoiceStatus @default(DRAFT)
+  
+  // Fechas
+  issueDate     DateTime      @default(now())
+  dueDate       DateTime      // Fecha de vencimiento
+  paidDate      DateTime?     // Fecha de pago
+  
+  // Montos
+  subtotal      Decimal       @db.Decimal(12, 2)
+  tax           Decimal       @default(0) @db.Decimal(12, 2) // IVA
+  total         Decimal       @db.Decimal(12, 2)
+  
+  notes         String?
+  
+  clientId      String
+  client        Client        @relation(fields: [clientId], references: [id])
+  
+  companyId     String
+  company       Company       @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+  
+  // Relaciones
+  items         InvoiceItem[]
+  payments      Payment[]
+  
+  @@unique([companyId, number])
+  @@map("invoices")
+}
+
+// Items de factura (líneas)
+model InvoiceItem {
+  id          String   @id @default(cuid())
+  
+  quantity    Int
+  unitPrice   Decimal  @db.Decimal(12, 2)
+  total       Decimal  @db.Decimal(12, 2)
+  description String?
+  
+  productId   String?
+  product     Product? @relation(fields: [productId], references: [id])
+  
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  @@map("invoice_items")
+}
+
+// Pagos recibidos
+model Payment {
+  id          String   @id @default(cuid())
+  amount      Decimal  @db.Decimal(12, 2)
+  method      String   @default("efectivo") // efectivo, transferencia, tarjeta
+  reference   String?  // Número de referencia
+  notes       String?
+  
+  invoiceId   String
+  invoice     Invoice  @relation(fields: [invoiceId], references: [id], onDelete: Cascade)
+  
+  paidAt      DateTime @default(now())
+  createdAt   DateTime @default(now())
+  
+  @@map("payments")
+}
+
+// ============================================
+// MÓDULO RECURSOS HUMANOS
+// ============================================
+
+enum EventType {
+  MEETING       // Reunión
+  BIRTHDAY      // Cumpleaños
+  ANNIVERSARY   // Aniversario laboral
+  EVALUATION    // Evaluación de desempeño
+  CONTRACT_END  // Vencimiento de contrato
+  TRAINING      // Capacitación
+  CORPORATE     // Evento corporativo
+  DEADLINE      // Fecha límite
+  OTHER         // Otro
+}
+
+// Eventos y Recordatorios
+model Event {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  type          EventType @default(OTHER)
+  
+  // Fechas
+  startDate     DateTime
+  endDate       DateTime?
+  allDay        Boolean   @default(false)
+  
+  // Recordatorios
+  reminderDays  Int       @default(1) // Días antes para recordar
+  
+  // Recurrencia simple
+  isRecurring   Boolean   @default(false)
+  
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  
+  @@map("events")
+}
+
+enum LeaveStatus {
+  PENDING   // Pendiente
+  APPROVED  // Aprobada
+  REJECTED  // Rechazada
+}
+
+enum LeaveType {
+  VACATION    // Vacaciones
+  SICK        // Enfermedad
+  PERSONAL    // Personal
+  MATERNITY   // Maternidad
+  OTHER       // Otro
+}
+
+// Solicitudes de permisos/ausencias
+model LeaveRequest {
+  id          String      @id @default(cuid())
+  type        LeaveType
+  status      LeaveStatus @default(PENDING)
+  
+  startDate   DateTime
+  endDate     DateTime
+  reason      String?
+  
+  // Respuesta
+  responseNote String?
+  respondedAt  DateTime?
+  
+  userId      String
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  @@map("leave_requests")
+}
+
+// ============================================
+// TAREAS (Compartido entre departamentos)
+// ============================================
+
+enum TaskStatus {
+  PENDING     // Pendiente
+  IN_PROGRESS // En progreso
+  COMPLETED   // Completada
+  CANCELLED   // Cancelada
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+model Task {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  status      TaskStatus   @default(PENDING)
+  priority    TaskPriority @default(MEDIUM)
+  
+  dueDate     DateTime?
+  completedAt DateTime?
+  
+  // Departamento al que pertenece
+  department  Department?
+  
+  createdById String
+  createdBy   User         @relation("TaskCreator", fields: [createdById], references: [id])
+  
+  assigneeId  String?
+  assignee    User?        @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  
+  @@map("tasks")
+}
+
+// ============================================
+// SISTEMA DE CHAT
+// ============================================
+
+enum ChatType {
+  INTERNAL  // Chat interno (empleados)
+  EXTERNAL  // Chat externo (clientes/público)
+}
+
+// Sesiones de chat
+model ChatSession {
+  id          String    @id @default(cuid())
+  type        ChatType
+  
+  // Para chat externo (sin login)
+  visitorName  String?
+  visitorEmail String?
+  visitorPhone String?
+  
+  // Contexto de la conversación (para IA)
+  context     String?   @db.Text
+  
+  isActive    Boolean   @default(true)
+  
+  companyId   String
+  company     Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+  // Relaciones
+  messages    ChatMessage[]
+  
+  @@map("chat_sessions")
+}
+
+enum MessageRole {
+  USER      // Mensaje del usuario
+  ASSISTANT // Respuesta de MiaBot
+  SYSTEM    // Mensaje del sistema
+}
+
+// Mensajes de chat
+model ChatMessage {
+  id          String      @id @default(cuid())
+  content     String      @db.Text
+  role        MessageRole
+  
+  // Metadatos (acciones ejecutadas, etc.)
+  metadata    Json?
+  
+  sessionId   String
+  session     ChatSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  
+  // Usuario (solo para chat interno)
+  userId      String?
+  user        User?       @relation(fields: [userId], references: [id])
+  
+  createdAt   DateTime    @default(now())
+  
+  @@map("chat_messages")
+}
+
+// ============================================
+// NOTIFICACIONES Y ALERTAS
+// ============================================
+
+enum NotificationType {
+  LOW_STOCK       // Stock bajo
+  INVOICE_DUE     // Factura por vencer
+  INVOICE_OVERDUE // Factura vencida
+  EVENT_REMINDER  // Recordatorio de evento
+  TASK_DUE        // Tarea por vencer
+  LEAVE_REQUEST   // Solicitud de permiso
+  CONTRACT_END    // Contrato por vencer
+  BIRTHDAY        // Cumpleaños
+  GENERAL         // General
+}
+
+model Notification {
+  id          String           @id @default(cuid())
+  type        NotificationType
+  title       String
+  message     String
+  
+  isRead      Boolean          @default(false)
+  
+  // Referencia al objeto relacionado
+  referenceId String?
+  referenceType String?        // "invoice", "product", "event", etc.
+  
+  userId      String
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt   DateTime         @default(now())
+  
+  @@map("notifications")
+}
+
+// ============================================
+// ARCHIVOS (Google Drive + Local)
+// ============================================
+
+model File {
+  id            String   @id @default(cuid())
+  name          String
+  mimeType      String
+  size          Int?
+  
+  // Puede ser local o Google Drive
+  storageType   String   @default("local") // "local" | "google_drive"
+  path          String?  // Path local
+  driveFileId   String?  // ID de Google Drive
+  driveUrl      String?  // URL de Google Drive
+  
+  // Referencia al objeto relacionado
+  referenceId   String?
+  referenceType String?  // "invoice", "contract", etc.
+  
+  uploadedById  String?
+  
+  createdAt     DateTime @default(now())
+  
+  @@map("files")
+}
