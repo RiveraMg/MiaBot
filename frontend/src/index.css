@@ -35,22 +35,18 @@
 }
 
 @layer components {
+
   /* Buttons */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 
-           font-medium text-sm rounded-lg transition-all duration-200
-           focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900
-           disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium text-sm rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900 disabled:opacity-50 disabled:cursor-not-allowed;
   }
 
   .btn-primary {
-    @apply btn bg-primary-600 text-white hover:bg-primary-700 
-           focus:ring-primary-500 active:bg-primary-800;
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 active:bg-primary-800;
   }
 
   .btn-secondary {
-    @apply btn bg-dark-700 text-dark-100 hover:bg-dark-600 
-           focus:ring-dark-500 border border-dark-600;
+    @apply btn bg-dark-700 text-dark-100 hover:bg-dark-600 focus:ring-dark-500 border border-dark-600;
   }
 
   .btn-ghost {
@@ -80,18 +76,35 @@
 
   /* Inputs */
   .input {
-    @apply w-full px-4 py-2.5 bg-dark-800 border border-dark-600 rounded-lg
-           text-dark-50 placeholder-dark-400
-           focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent
-           transition-all duration-200;
+    @apply w-full px-4 py-2.5 bg-dark-800 border border-dark-600 rounded-lg text-dark-50 placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
   }
 
   .input-error {
     @apply input border-red-500 focus:ring-red-500;
   }
 
+  .input-success {
+    @apply input border-green-500 focus:ring-green-500;
+  }
+
+  .input-warning {
+    @apply input border-yellow-500 focus:ring-yellow-500;
+  }
+
   .label {
     @apply block text-sm font-medium text-dark-300 mb-1.5;
+  }
+
+  .error-message {
+    @apply text-xs text-red-400 mt-1.5 flex items-center gap-1;
+  }
+
+  .success-message {
+    @apply text-xs text-green-400 mt-1.5 flex items-center gap-1;
+  }
+
+  .field-wrapper {
+    @apply space-y-1;
   }
 
   /* Badges */
@@ -142,8 +155,7 @@
 
   /* Sidebar */
   .sidebar-link {
-    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-dark-400 
-           hover:bg-dark-800 hover:text-dark-100 transition-all duration-200;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-dark-400 hover:bg-dark-800 hover:text-dark-100 transition-all duration-200;
   }
 
   .sidebar-link-active {
@@ -218,5 +230,48 @@
 
   .text-gradient {
     @apply bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent;
+  }
+
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-4px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(4px);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
   }
 }
