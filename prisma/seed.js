@@ -43,13 +43,13 @@ async function main() {
   console.log('✅ Categorías creadas:', categories.length);
 
   // Crear usuario Admin
-  const hashedPassword = await bcrypt.hash('admin123', 10);
-  
+  const hashedPassword = await bcrypt.hash('MiaBot123', 10);
+
   const admin = await prisma.user.upsert({
-    where: { email: 'admin@miabot.com' },
+    where: { email: 'Miabotofficial@gmail.com' },
     update: {},
     create: {
-      email: 'admin@miabot.com',
+      email: 'Miabotofficial@gmail.com',
       password: hashedPassword,
       name: 'Administrador',
       role: 'ADMIN',
@@ -293,7 +293,7 @@ async function main() {
 
   console.log('\n🎉 Seed completado exitosamente!');
   console.log('\n📋 Credenciales de prueba:');
-  console.log('   Admin: admin@miabot.com / admin123');
+  console.log('   Admin: Miabotofficial@gmail.com / MiaBot123');
   console.log('   Finanzas: finanzas@miabot.com / admin123');
   console.log('   RRHH: rrhh@miabot.com / admin123');
 }
