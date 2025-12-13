@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { productsAPI } from '../services/api';
 import {
-    Package, Plus, Search, Filter, AlertTriangle,
-    Edit2, Trash2, Loader2, ChevronLeft, ChevronRight,
+    Package, Plus, Search, AlertTriangle,
+    Edit2, Trash2, Loader2,
     TrendingDown, TrendingUp
 } from 'lucide-react';
+import PageHeader from '../components/common/PageHeader';
+import Modal from '../components/common/Modal';
+import Pagination from '../components/common/Pagination';
 
 const Products = () => {
     const [products, setProducts] = useState([]);
@@ -61,48 +64,60 @@ const Products = () => {
         return { label: 'En stock', class: 'badge-success' };
     };
 
+    const headerActions = (
+        <button
+            onClick={() => { setEditingProduct(null); setShowModal(true); }}
+            className="btn-primary"
+        >
+            <Plus className="w-4 h-4" />
+            Nuevo Producto
+        </button>
+    );
+
+    const filters = (
+        <div className="flex flex-wrap gap-4">
+            <div className="flex-1 min-w-[200px] max-w-md relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-500" />
+                <input
+                    type="text"
+                    placeholder="Buscar por nombre o SKU..."
+                    value={searchTerm}
+                    onChange={(e) => setSearchTerm(e.target.value)}
+                    className="input pl-10"
+                />
+            </div>
+            <button
+                onClick={() => setShowLowStock(!showLowStock)}
+                className={`btn ${showLowStock ? 'btn-primary' : 'btn-secondary'}`}
+            >
+                <AlertTriangle className="w-4 h-4" />
+                Stock bajo
+            </button>
+        </div>
+    );
+
+    const modalFooter = (
+        <>
+            <button onClick={() => setShowModal(false)} className="btn-secondary">
+                Cancelar
+            </button>
+            <button className="btn-primary">
+                {editingProduct ? 'Guardar' : 'Crear'}
+            </button>
+        </>
+    );
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-orange-900/30">
-                        <Package className="w-5 h-5 text-orange-400" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-dark-50">Inventario</h1>
-                        <p className="text-sm text-dark-400">Gestión de productos y stock</p>
-                    </div>
-                </div>
-                <button
-                    onClick={() => { setEditingProduct(null); setShowModal(true); }}
-                    className="btn-primary"
-                >
-                    <Plus className="w-4 h-4" />
-                    Nuevo Producto
-                </button>
-            </div>
-
-            {/* Filters */}
-            <div className="flex flex-wrap gap-4">
-                <div className="flex-1 min-w-[200px] max-w-md relative">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-dark-500" />
-                    <input
-                        type="text"
-                        placeholder="Buscar por nombre o SKU..."
-                        value={searchTerm}
-                        onChange={(e) => setSearchTerm(e.target.value)}
-                        className="input pl-10"
-                    />
-                </div>
-                <button
-                    onClick={() => setShowLowStock(!showLowStock)}
-                    className={`btn ${showLowStock ? 'btn-primary' : 'btn-secondary'}`}
-                >
-                    <AlertTriangle className="w-4 h-4" />
-                    Stock bajo
-                </button>
-            </div>
+            <PageHeader
+                title="Inventario"
+                subtitle="Gestión de productos y stock"
+                icon={Package}
+                iconColor="orange"
+                actions={headerActions}
+            >
+                {filters}
+            </PageHeader>
 
             {/* Table */}
             <div className="card overflow-hidden p-0">
@@ -182,76 +197,46 @@ const Products = () => {
                     </table>
                 )}
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-6 py-4 border-t border-dark-700">
-                        <p className="text-sm text-dark-400">
-                            Página {page} de {totalPages}
-                        </p>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
-                                disabled={page === 1}
-                                className="btn-secondary btn-sm"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className="btn-secondary btn-sm"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                />
             </div>
 
-            {/* Modal placeholder - would need full implementation */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="card w-full max-w-lg mx-4">
-                        <h2 className="text-lg font-bold text-dark-100 mb-4">
-                            {editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
-                        </h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="label">Nombre</label>
-                                <input type="text" className="input" defaultValue={editingProduct?.name} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">SKU</label>
-                                    <input type="text" className="input" defaultValue={editingProduct?.sku} />
-                                </div>
-                                <div>
-                                    <label className="label">Stock</label>
-                                    <input type="number" className="input" defaultValue={editingProduct?.stock || 0} />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Precio Costo</label>
-                                    <input type="number" className="input" defaultValue={editingProduct?.costPrice} />
-                                </div>
-                                <div>
-                                    <label className="label">Precio Venta</label>
-                                    <input type="number" className="input" defaultValue={editingProduct?.salePrice} />
-                                </div>
-                            </div>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingProduct ? 'Editar Producto' : 'Nuevo Producto'}
+                footer={modalFooter}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="label">Nombre</label>
+                        <input type="text" className="input" defaultValue={editingProduct?.name} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">SKU</label>
+                            <input type="text" className="input" defaultValue={editingProduct?.sku} />
                         </div>
-                        <div className="flex justify-end gap-3 mt-6">
-                            <button onClick={() => setShowModal(false)} className="btn-secondary">
-                                Cancelar
-                            </button>
-                            <button className="btn-primary">
-                                {editingProduct ? 'Guardar' : 'Crear'}
-                            </button>
+                        <div>
+                            <label className="label">Stock</label>
+                            <input type="number" className="input" defaultValue={editingProduct?.stock || 0} />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Precio Costo</label>
+                            <input type="number" className="input" defaultValue={editingProduct?.costPrice} />
+                        </div>
+                        <div>
+                            <label className="label">Precio Venta</label>
+                            <input type="number" className="input" defaultValue={editingProduct?.salePrice} />
                         </div>
                     </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 };

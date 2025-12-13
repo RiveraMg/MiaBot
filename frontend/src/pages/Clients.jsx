@@ -2,9 +2,11 @@ import { useState, useEffect } from 'react';
 import { clientsAPI } from '../services/api';
 import {
     Users, Plus, Search, Mail, Phone,
-    Edit2, Trash2, Loader2, ChevronLeft, ChevronRight,
-    MapPin, Building
+    Edit2, Trash2, Loader2, MapPin
 } from 'lucide-react';
+import PageHeader from '../components/common/PageHeader';
+import Modal from '../components/common/Modal';
+import Pagination from '../components/common/Pagination';
 
 const Clients = () => {
     const [clients, setClients] = useState([]);
@@ -48,27 +50,36 @@ const Clients = () => {
         client.nit?.includes(searchTerm)
     );
 
+    const headerActions = (
+        <button
+            onClick={() => { setEditingClient(null); setShowModal(true); }}
+            className="btn-primary"
+        >
+            <Plus className="w-4 h-4" />
+            Nuevo Cliente
+        </button>
+    );
+
+    const modalFooter = (
+        <>
+            <button onClick={() => setShowModal(false)} className="btn-secondary">
+                Cancelar
+            </button>
+            <button className="btn-primary">
+                {editingClient ? 'Guardar' : 'Crear'}
+            </button>
+        </>
+    );
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-blue-900/30">
-                        <Users className="w-5 h-5 text-blue-400" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-dark-50">Clientes</h1>
-                        <p className="text-sm text-dark-400">Gestión de clientes</p>
-                    </div>
-                </div>
-                <button
-                    onClick={() => { setEditingClient(null); setShowModal(true); }}
-                    className="btn-primary"
-                >
-                    <Plus className="w-4 h-4" />
-                    Nuevo Cliente
-                </button>
-            </div>
+            <PageHeader
+                title="Clientes"
+                subtitle="Gestión de clientes"
+                icon={Users}
+                iconColor="blue"
+                actions={headerActions}
+            />
 
             {/* Search */}
             <div className="max-w-md relative">
@@ -146,73 +157,43 @@ const Clients = () => {
                 </div>
             )}
 
-            {/* Pagination */}
-            {totalPages > 1 && (
-                <div className="flex items-center justify-between">
-                    <p className="text-sm text-dark-400">
-                        Página {page} de {totalPages}
-                    </p>
-                    <div className="flex gap-2">
-                        <button
-                            onClick={() => setPage(p => Math.max(1, p - 1))}
-                            disabled={page === 1}
-                            className="btn-secondary btn-sm"
-                        >
-                            <ChevronLeft className="w-4 h-4" />
-                        </button>
-                        <button
-                            onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                            disabled={page === totalPages}
-                            className="btn-secondary btn-sm"
-                        >
-                            <ChevronRight className="w-4 h-4" />
-                        </button>
-                    </div>
-                </div>
-            )}
+            <Pagination
+                currentPage={page}
+                totalPages={totalPages}
+                onPageChange={setPage}
+            />
 
-            {/* Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="card w-full max-w-lg mx-4">
-                        <h2 className="text-lg font-bold text-dark-100 mb-4">
-                            {editingClient ? 'Editar Cliente' : 'Nuevo Cliente'}
-                        </h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="label">Nombre</label>
-                                <input type="text" className="input" defaultValue={editingClient?.name} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">NIT / Cédula</label>
-                                    <input type="text" className="input" defaultValue={editingClient?.nit} />
-                                </div>
-                                <div>
-                                    <label className="label">Teléfono</label>
-                                    <input type="tel" className="input" defaultValue={editingClient?.phone} />
-                                </div>
-                            </div>
-                            <div>
-                                <label className="label">Email</label>
-                                <input type="email" className="input" defaultValue={editingClient?.email} />
-                            </div>
-                            <div>
-                                <label className="label">Dirección</label>
-                                <input type="text" className="input" defaultValue={editingClient?.address} />
-                            </div>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingClient ? 'Editar Cliente' : 'Nuevo Cliente'}
+                footer={modalFooter}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="label">Nombre</label>
+                        <input type="text" className="input" defaultValue={editingClient?.name} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">NIT / Cédula</label>
+                            <input type="text" className="input" defaultValue={editingClient?.nit} />
                         </div>
-                        <div className="flex justify-end gap-3 mt-6">
-                            <button onClick={() => setShowModal(false)} className="btn-secondary">
-                                Cancelar
-                            </button>
-                            <button className="btn-primary">
-                                {editingClient ? 'Guardar' : 'Crear'}
-                            </button>
+                        <div>
+                            <label className="label">Teléfono</label>
+                            <input type="tel" className="input" defaultValue={editingClient?.phone} />
                         </div>
                     </div>
+                    <div>
+                        <label className="label">Email</label>
+                        <input type="email" className="input" defaultValue={editingClient?.email} />
+                    </div>
+                    <div>
+                        <label className="label">Dirección</label>
+                        <input type="text" className="input" defaultValue={editingClient?.address} />
+                    </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 };

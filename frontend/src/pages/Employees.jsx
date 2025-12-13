@@ -1,10 +1,13 @@
 import { useState, useEffect } from 'react';
 import { usersAPI } from '../services/api';
 import {
-    Users, Plus, Search, Mail, Phone,
-    Edit2, Trash2, Loader2, ChevronLeft, ChevronRight,
-    Briefcase, Calendar, Shield
+    Users, Plus, Search,
+    Edit2, Trash2, Loader2,
+    Briefcase
 } from 'lucide-react';
+import PageHeader from '../components/common/PageHeader';
+import Modal from '../components/common/Modal';
+import Pagination from '../components/common/Pagination';
 
 const Employees = () => {
     const [employees, setEmployees] = useState([]);
@@ -73,27 +76,36 @@ const Employees = () => {
         });
     };
 
+    const headerActions = (
+        <button
+            onClick={() => { setEditingEmployee(null); setShowModal(true); }}
+            className="btn-primary"
+        >
+            <Plus className="w-4 h-4" />
+            Nuevo Empleado
+        </button>
+    );
+
+    const modalFooter = (
+        <>
+            <button onClick={() => setShowModal(false)} className="btn-secondary">
+                Cancelar
+            </button>
+            <button className="btn-primary">
+                {editingEmployee ? 'Guardar' : 'Crear'}
+            </button>
+        </>
+    );
+
     return (
         <div className="space-y-6">
-            {/* Header */}
-            <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                    <div className="p-2 rounded-xl bg-purple-900/30">
-                        <Users className="w-5 h-5 text-purple-400" />
-                    </div>
-                    <div>
-                        <h1 className="text-xl font-bold text-dark-50">Empleados</h1>
-                        <p className="text-sm text-dark-400">Gestión del personal</p>
-                    </div>
-                </div>
-                <button
-                    onClick={() => { setEditingEmployee(null); setShowModal(true); }}
-                    className="btn-primary"
-                >
-                    <Plus className="w-4 h-4" />
-                    Nuevo Empleado
-                </button>
-            </div>
+            <PageHeader
+                title="Empleados"
+                subtitle="Gestión del personal"
+                icon={Users}
+                iconColor="purple"
+                actions={headerActions}
+            />
 
             {/* Search */}
             <div className="max-w-md relative">
@@ -195,97 +207,67 @@ const Employees = () => {
                     </table>
                 )}
 
-                {/* Pagination */}
-                {totalPages > 1 && (
-                    <div className="flex items-center justify-between px-6 py-4 border-t border-dark-700">
-                        <p className="text-sm text-dark-400">
-                            Página {page} de {totalPages}
-                        </p>
-                        <div className="flex gap-2">
-                            <button
-                                onClick={() => setPage(p => Math.max(1, p - 1))}
-                                disabled={page === 1}
-                                className="btn-secondary btn-sm"
-                            >
-                                <ChevronLeft className="w-4 h-4" />
-                            </button>
-                            <button
-                                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
-                                disabled={page === totalPages}
-                                className="btn-secondary btn-sm"
-                            >
-                                <ChevronRight className="w-4 h-4" />
-                            </button>
-                        </div>
-                    </div>
-                )}
+                <Pagination
+                    currentPage={page}
+                    totalPages={totalPages}
+                    onPageChange={setPage}
+                />
             </div>
 
-            {/* Modal */}
-            {showModal && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-                    <div className="card w-full max-w-lg mx-4 max-h-[90vh] overflow-y-auto">
-                        <h2 className="text-lg font-bold text-dark-100 mb-4">
-                            {editingEmployee ? 'Editar Empleado' : 'Nuevo Empleado'}
-                        </h2>
-                        <div className="space-y-4">
-                            <div>
-                                <label className="label">Nombre completo</label>
-                                <input type="text" className="input" defaultValue={editingEmployee?.name} />
-                            </div>
-                            <div>
-                                <label className="label">Email</label>
-                                <input type="email" className="input" defaultValue={editingEmployee?.email} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Cargo</label>
-                                    <input type="text" className="input" defaultValue={editingEmployee?.position} />
-                                </div>
-                                <div>
-                                    <label className="label">Teléfono</label>
-                                    <input type="tel" className="input" defaultValue={editingEmployee?.phone} />
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Departamento</label>
-                                    <select className="input" defaultValue={editingEmployee?.department || ''}>
-                                        <option value="">Seleccionar...</option>
-                                        <option value="FINANCE">Finanzas</option>
-                                        <option value="HR">RRHH</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label className="label">Rol</label>
-                                    <select className="input" defaultValue={editingEmployee?.role || 'EMPLOYEE'}>
-                                        <option value="EMPLOYEE">Empleado</option>
-                                        <option value="ADMIN">Administrador</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label className="label">Fecha de ingreso</label>
-                                    <input type="date" className="input" defaultValue={editingEmployee?.hireDate?.split('T')[0]} />
-                                </div>
-                                <div>
-                                    <label className="label">Fecha de nacimiento</label>
-                                    <input type="date" className="input" defaultValue={editingEmployee?.birthDate?.split('T')[0]} />
-                                </div>
-                            </div>
+            <Modal
+                isOpen={showModal}
+                onClose={() => setShowModal(false)}
+                title={editingEmployee ? 'Editar Empleado' : 'Nuevo Empleado'}
+                footer={modalFooter}
+            >
+                <div className="space-y-4">
+                    <div>
+                        <label className="label">Nombre completo</label>
+                        <input type="text" className="input" defaultValue={editingEmployee?.name} />
+                    </div>
+                    <div>
+                        <label className="label">Email</label>
+                        <input type="email" className="input" defaultValue={editingEmployee?.email} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Cargo</label>
+                            <input type="text" className="input" defaultValue={editingEmployee?.position} />
                         </div>
-                        <div className="flex justify-end gap-3 mt-6">
-                            <button onClick={() => setShowModal(false)} className="btn-secondary">
-                                Cancelar
-                            </button>
-                            <button className="btn-primary">
-                                {editingEmployee ? 'Guardar' : 'Crear'}
-                            </button>
+                        <div>
+                            <label className="label">Teléfono</label>
+                            <input type="tel" className="input" defaultValue={editingEmployee?.phone} />
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Departamento</label>
+                            <select className="input" defaultValue={editingEmployee?.department || ''}>
+                                <option value="">Seleccionar...</option>
+                                <option value="FINANCE">Finanzas</option>
+                                <option value="HR">RRHH</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label className="label">Rol</label>
+                            <select className="input" defaultValue={editingEmployee?.role || 'EMPLOYEE'}>
+                                <option value="EMPLOYEE">Empleado</option>
+                                <option value="ADMIN">Administrador</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                        <div>
+                            <label className="label">Fecha de ingreso</label>
+                            <input type="date" className="input" defaultValue={editingEmployee?.hireDate?.split('T')[0]} />
+                        </div>
+                        <div>
+                            <label className="label">Fecha de nacimiento</label>
+                            <input type="date" className="input" defaultValue={editingEmployee?.birthDate?.split('T')[0]} />
                         </div>
                     </div>
                 </div>
-            )}
+            </Modal>
         </div>
     );
 };
