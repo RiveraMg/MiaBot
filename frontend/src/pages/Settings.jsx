@@ -84,6 +84,15 @@ const Settings = () => {
                                 />
                             </div>
                             <div>
+                                <label className="label">Rol</label>
+                                <input
+                                    type="text"
+                                    value={user?.role || 'N/A'}
+                                    className="input"
+                                    disabled
+                                />
+                            </div>
+                            <div>
                                 <label className="label">Departamento</label>
                                 <input
                                     type="text"
@@ -218,13 +227,13 @@ const Settings = () => {
                                 <button
                                     key={theme.id}
                                     className={`p-4 rounded-xl border-2 transition-all ${theme.active
-                                            ? 'border-primary-500 bg-primary-900/20'
-                                            : 'border-dark-700 hover:border-dark-600'
+                                        ? 'border-primary-500 bg-primary-900/20'
+                                        : 'border-dark-700 hover:border-dark-600'
                                         }`}
                                 >
                                     <div className={`w-full h-16 rounded-lg mb-2 ${theme.id === 'dark' ? 'bg-dark-900' :
-                                            theme.id === 'light' ? 'bg-gray-100' :
-                                                'bg-gradient-to-r from-dark-900 to-gray-100'
+                                        theme.id === 'light' ? 'bg-gray-100' :
+                                            'bg-gradient-to-r from-dark-900 to-gray-100'
                                         }`} />
                                     <span className="text-sm text-dark-300">{theme.label}</span>
                                 </button>
@@ -286,8 +295,8 @@ const Settings = () => {
                                 key={tab.id}
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-left transition-colors ${activeTab === tab.id
-                                        ? 'bg-primary-900/30 text-primary-400'
-                                        : 'text-dark-400 hover:bg-dark-800 hover:text-dark-200'
+                                    ? 'bg-primary-900/30 text-primary-400'
+                                    : 'text-dark-400 hover:bg-dark-800 hover:text-dark-200'
                                     }`}
                             >
                                 <tab.icon className="w-5 h-5" />
