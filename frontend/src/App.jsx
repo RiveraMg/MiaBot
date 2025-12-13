@@ -4,6 +4,8 @@ import ProtectedRoute from './components/ProtectedRoute';
 import Layout from './components/Layout';
 import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
+import Chat from './pages/Chat';
+import Settings from './pages/Settings';
 
 // Placeholder pages (will be implemented)
 const PlaceholderPage = ({ title }) => (
@@ -43,8 +45,8 @@ function App() {
             <Route path="/leave-requests" element={<PlaceholderPage title="Permisos" />} />
 
             {/* General */}
-            <Route path="/chat" element={<PlaceholderPage title="Chat IA" />} />
-            <Route path="/settings" element={<PlaceholderPage title="Configuración" />} />
+            <Route path="/chat" element={<Chat />} />
+            <Route path="/settings" element={<Settings />} />
           </Route>
 
           {/* Catch all */}
