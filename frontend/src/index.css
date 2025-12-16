@@ -1,0 +1,303 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ========================================
+   MiaBot - Corporate Design System
+   ======================================== */
+
+@layer base {
+  :root {
+    --color-bg-primary: #0f172a;
+    --color-bg-secondary: #1e293b;
+    --color-bg-tertiary: #334155;
+    --color-text-primary: #f8fafc;
+    --color-text-secondary: #94a3b8;
+    --color-text-muted: #64748b;
+    --color-border: #334155;
+    --color-accent: #6366f1;
+
+    --miabot-dark-50: 248 250 252;
+    --miabot-dark-100: 241 245 249;
+    --miabot-dark-200: 226 232 240;
+    --miabot-dark-300: 203 213 225;
+    --miabot-dark-400: 148 163 184;
+    --miabot-dark-500: 100 116 139;
+    --miabot-dark-600: 71 85 105;
+    --miabot-dark-700: 51 65 85;
+    --miabot-dark-800: 30 41 59;
+    --miabot-dark-900: 15 23 42;
+    --miabot-dark-950: 2 6 23;
+  }
+
+  html.light {
+    --miabot-dark-50: 15 23 42;
+    --miabot-dark-100: 30 41 59;
+    --miabot-dark-200: 51 65 85;
+    --miabot-dark-300: 71 85 105;
+    --miabot-dark-400: 100 116 139;
+    --miabot-dark-500: 148 163 184;
+    --miabot-dark-600: 203 213 225;
+    --miabot-dark-700: 226 232 240;
+    --miabot-dark-800: 241 245 249;
+    --miabot-dark-900: 248 250 252;
+    --miabot-dark-950: 255 255 255;
+  }
+
+  html {
+    @apply antialiased;
+  }
+
+  body {
+    @apply bg-dark-900 text-dark-50 font-sans;
+    font-feature-settings: 'cv02', 'cv03', 'cv04', 'cv11';
+  }
+
+  * {
+    @apply border-dark-700;
+  }
+}
+
+@layer components {
+
+  /* Buttons */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 px-4 py-2.5 font-medium text-sm rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-900 disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+
+  .btn-primary {
+    @apply btn bg-primary-600 text-white hover:bg-primary-700 focus:ring-primary-500 active:bg-primary-800;
+  }
+
+  .btn-secondary {
+    @apply btn bg-dark-700 text-dark-100 hover:bg-dark-600 focus:ring-dark-500 border border-dark-600;
+  }
+
+  .btn-ghost {
+    @apply btn bg-transparent text-dark-300 hover:bg-dark-800 hover:text-dark-100;
+  }
+
+  .btn-danger {
+    @apply btn bg-red-600 text-white hover:bg-red-700 focus:ring-red-500;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  /* Cards */
+  .card {
+    @apply bg-dark-800 rounded-xl border border-dark-700 p-6;
+  }
+
+  .card-hover {
+    @apply card transition-all duration-200 hover:border-dark-600 hover:shadow-lg;
+  }
+
+  /* Inputs */
+  .input {
+    @apply w-full px-4 py-2.5 bg-dark-800 border border-dark-600 rounded-lg text-dark-50 placeholder-dark-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-all duration-200;
+  }
+
+  .input-error {
+    @apply input border-red-500 focus:ring-red-500;
+  }
+
+  .input-success {
+    @apply input border-green-500 focus:ring-green-500;
+  }
+
+  .input-warning {
+    @apply input border-yellow-500 focus:ring-yellow-500;
+  }
+
+  .label {
+    @apply block text-sm font-medium text-dark-300 mb-1.5;
+  }
+
+  .error-message {
+    @apply text-xs text-red-400 mt-1.5 flex items-center gap-1;
+  }
+
+  .success-message {
+    @apply text-xs text-green-400 mt-1.5 flex items-center gap-1;
+  }
+
+  .field-wrapper {
+    @apply space-y-1;
+  }
+
+  /* Badges */
+  .badge {
+    @apply inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium;
+  }
+
+  .badge-primary {
+    @apply badge bg-primary-900/50 text-primary-300 border border-primary-700;
+  }
+
+  .badge-success {
+    @apply badge bg-green-900/50 text-green-300 border border-green-700;
+  }
+
+  .badge-warning {
+    @apply badge bg-yellow-900/50 text-yellow-300 border border-yellow-700;
+  }
+
+  .badge-danger {
+    @apply badge bg-red-900/50 text-red-300 border border-red-700;
+  }
+
+  .badge-info {
+    @apply badge bg-blue-900/50 text-blue-300 border border-blue-700;
+  }
+
+  /* Tables */
+  .table {
+    @apply w-full text-sm text-left;
+  }
+
+  .table thead {
+    @apply text-xs uppercase text-dark-400 bg-dark-800/50;
+  }
+
+  .table th {
+    @apply px-6 py-4 font-medium;
+  }
+
+  .table td {
+    @apply px-6 py-4;
+  }
+
+  .table tbody tr {
+    @apply border-b border-dark-700 hover:bg-dark-800/50 transition-colors;
+  }
+
+  /* Sidebar */
+  .sidebar-link {
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-lg text-dark-400 hover:bg-dark-800 hover:text-dark-100 transition-all duration-200;
+  }
+
+  .sidebar-link-active {
+    @apply sidebar-link bg-primary-900/30 text-primary-400 border-l-2 border-primary-500;
+  }
+
+  /* Alerts */
+  .alert {
+    @apply flex items-start gap-3 p-4 rounded-lg border;
+  }
+
+  .alert-info {
+    @apply alert bg-blue-900/20 border-blue-800 text-blue-300;
+  }
+
+  .alert-success {
+    @apply alert bg-green-900/20 border-green-800 text-green-300;
+  }
+
+  .alert-warning {
+    @apply alert bg-yellow-900/20 border-yellow-800 text-yellow-300;
+  }
+
+  .alert-danger {
+    @apply alert bg-red-900/20 border-red-800 text-red-300;
+  }
+
+  /* Metrics Card */
+  .metric-card {
+    @apply card flex flex-col;
+  }
+
+  .metric-value {
+    @apply text-3xl font-bold text-dark-50;
+  }
+
+  .metric-label {
+    @apply text-sm text-dark-400 mt-1;
+  }
+
+  .metric-change {
+    @apply text-xs font-medium mt-2;
+  }
+
+  .metric-change-up {
+    @apply metric-change text-green-400;
+  }
+
+  .metric-change-down {
+    @apply metric-change text-red-400;
+  }
+}
+
+@layer utilities {
+  .scrollbar-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #334155 #1e293b;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    background: #1e293b;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    background-color: #334155;
+    border-radius: 3px;
+  }
+
+  .text-gradient {
+    @apply bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent;
+  }
+
+  @keyframes shake {
+
+    0%,
+    100% {
+      transform: translateX(0);
+    }
+
+    10%,
+    30%,
+    50%,
+    70%,
+    90% {
+      transform: translateX(-4px);
+    }
+
+    20%,
+    40%,
+    60%,
+    80% {
+      transform: translateX(4px);
+    }
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  .animate-shake {
+    animation: shake 0.5s ease-in-out;
+  }
+
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-out;
+  }
+}

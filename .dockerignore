@@ -1,0 +1,31 @@
+# Dependencias
+node_modules
+npm-debug.log
+
+# Variables de entorno (se pasan con --env-file)
+.env
+.env.local
+.env.*.local
+
+# Git
+.git
+.gitignore
+
+# Documentación
+README.md
+database/
+*.md
+
+# Archivos de desarrollo
+.vscode
+.idea
+*.log
+
+# Uploads (se montan como volumen)
+uploads/*
+!uploads/.gitkeep
+
+# Tests
+tests/
+*.test.js
+*.spec.js
